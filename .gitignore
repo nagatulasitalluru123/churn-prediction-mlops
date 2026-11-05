@@ -1,0 +1,42 @@
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
+# MLflow
+mlruns/
+mlflow.db
+# Generated outputs
+outputs/
+logs/
+artifacts/
+# Generated model files
+*.pkl
+*.joblib
+*.npy
+# Generated reports/results
+*_report.json
+*_report.csv
+*_validation.csv
+*_simulation_errors.csv
+# Generated datasets
+evolved_data.csv
+evolved_labeled_data.csv
+post_drift_training_data.csv
+updated_training_data.csv
+new_churn.csv
+churn_v01.csv
+churn_v02.csv
+churn_v03.csv
+# Processed/generated data
+data/processed/
+data/monitoring/
+# Keep the main raw dataset
+data/raw/*
+!data/raw/churn.csv
+!data/raw/archive/
+data/raw/archive/*
+# Keep source/documentation/configuration
+# Do not ignore .github, src, api, tests, docs, k8s, deployment
