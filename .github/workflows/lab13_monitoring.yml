@@ -1,6 +1,9 @@
 name: Lab 13 - End-to-End MLOps
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
   schedule:
     - cron: "17 * * * *"
