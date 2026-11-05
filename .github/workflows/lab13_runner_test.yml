@@ -3,7 +3,7 @@ name: Lab 13 - Self Hosted Runner Test
 on:
   push:
     branches:
-      - lab13-integration
+      - master
   workflow_dispatch:
 
 jobs:
@@ -11,6 +11,9 @@ jobs:
     runs-on: [self-hosted, Windows, X64]
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Check Python
         shell: powershell
         run: python --version
@@ -32,4 +35,4 @@ jobs:
         run: |
           Write-Host "Runner: $env:RUNNER_NAME"
           Write-Host "Workspace: $env:GITHUB_WORKSPACE"
-          Test-Path "C:\Users\jnane\Favorites\churn-prediction"
+          Test-Path "$env:GITHUB_WORKSPACE"
