@@ -20,20 +20,25 @@ jobs:
       - name: Setup Python environment
         shell: powershell
         run: |
-          python -m venv venv
-          .\venv\Scripts\python.exe -m pip install --upgrade pip
-          .\venv\Scripts\python.exe -m pip install -r requirements.txt
-          .\venv\Scripts\python.exe -m pip install -r requirements-api.txt
-          .\venv\Scripts\python.exe -m pip install mlflow
-
-      - name: Verify MLflow installation
-        shell: powershell
-        run: |
           Set-Location "$env:GITHUB_WORKSPACE"
+
+          if (Test-Path ".\venv") {
+              Write-Host "Removing old virtual environment..."
+              Remove-Item ".\venv" -Recurse -Force
+          }
+
+          python -m venv venv
+
+          & ".\venv\Scripts\python.exe" -m pip install --upgrade pip
+          & ".\venv\Scripts\python.exe" -m pip install -r requirements.txt
+          & ".\venv\Scripts\python.exe" -m pip install -r requirements-api.txt
+          & ".\venv\Scripts\python.exe" -m pip install mlflow
+
+          Write-Host "Checking MLflow installation..."
           & ".\venv\Scripts\python.exe" -c "import mlflow; print('MLflow version:', mlflow.__version__)"
 
           if ($LASTEXITCODE -ne 0) {
-              Write-Host "ERROR: MLflow is not installed correctly."
+              Write-Host "ERROR: MLflow installation failed."
               exit $LASTEXITCODE
           }
 
