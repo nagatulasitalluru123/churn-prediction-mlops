@@ -46,6 +46,51 @@ jobs:
           Write-Host "SUCCESS: X_test_raw.csv exists."
           Get-Item ".\data\processed\X_test_raw.csv"
 
+      - name: Train and register model
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\05_train_registry.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              Write-Host "Model training/registration failed."
+              exit $LASTEXITCODE
+          }
+
+      - name: Automate model lifecycle
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\08_automate_lifecycle.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              Write-Host "Model lifecycle failed."
+              exit $LASTEXITCODE
+          }
+
+      - name: Prepare deployment bundle
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\11_prepare_deployment.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              Write-Host "Deployment preparation failed."
+              exit $LASTEXITCODE
+          }
+
+          if (-not (Test-Path ".\deployment\model.pkl")) {
+              Write-Host "ERROR: deployment\model.pkl was not created."
+              exit 1
+          }
+
+          if (-not (Test-Path ".\deployment\preprocessor.pkl")) {
+              Write-Host "ERROR: deployment\preprocessor.pkl was not created."
+              exit 1
+          }
+
+          Write-Host "SUCCESS: Deployment bundle created."
+
       - name: Generate evolved dataset
         shell: powershell
         run: |
