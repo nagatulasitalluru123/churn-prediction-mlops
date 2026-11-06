@@ -79,6 +79,7 @@ def train_and_register_model():
         joblib.dump(model, config["paths"]["model"])
 
         preprocessor_path = config["paths"]["preprocessor"]
+
         if os.path.exists(preprocessor_path):
             mlflow.log_artifact(
                 preprocessor_path,
@@ -90,8 +91,8 @@ def train_and_register_model():
         mlflow.sklearn.log_model(
             model,
             "model",
-            registered_model_name=model_name,
-            skops_trusted_types=["sklearn.tree._tree.Tree"]
+            serialization_format="cloudpickle",
+            registered_model_name=model_name
         )
 
         print(
@@ -100,6 +101,7 @@ def train_and_register_model():
             f"F1={metrics['f1_score']:.4f} | "
             f"ROC-AUC={metrics['roc_auc']:.4f}"
         )
+
         print(f"[SUCCESS] Model saved to {config['paths']['model']}")
         print(f"[SUCCESS] Model registered as '{model_name}'")
         print(f"[INFO] MLflow Run ID: {run.info.run_id}")
