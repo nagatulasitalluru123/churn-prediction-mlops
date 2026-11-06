@@ -45,6 +45,8 @@ def train_and_register_model():
         "class_weight": model_cfg["class_weight"],
     }
 
+    model_name = config["registry"]["model_name"]
+
     with mlflow.start_run(run_name="RandomForest") as run:
         mlflow.log_params(params)
         mlflow.log_param("model_family", "RandomForest")
@@ -78,13 +80,18 @@ def train_and_register_model():
 
         preprocessor_path = config["paths"]["preprocessor"]
         if os.path.exists(preprocessor_path):
-            mlflow.log_artifact(preprocessor_path, artifact_path="preprocessing_pipeline")
+            mlflow.log_artifact(
+                preprocessor_path,
+                artifact_path="preprocessing_pipeline"
+            )
 
         print("[INFO] Pushing model to MLflow Registry...")
+
         mlflow.sklearn.log_model(
-            sk_model=model,
-            name="random_forest_model",
-            registered_model_name=config["registry"]["model_name"],
+            model,
+            "model",
+            registered_model_name=model_name,
+            skops_trusted_types=["sklearn.tree._tree.Tree"]
         )
 
         print(
@@ -94,7 +101,7 @@ def train_and_register_model():
             f"ROC-AUC={metrics['roc_auc']:.4f}"
         )
         print(f"[SUCCESS] Model saved to {config['paths']['model']}")
-        print(f"[SUCCESS] Model registered as '{config['registry']['model_name']}'")
+        print(f"[SUCCESS] Model registered as '{model_name}'")
         print(f"[INFO] MLflow Run ID: {run.info.run_id}")
 
     return True
