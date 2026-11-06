@@ -26,6 +26,19 @@ jobs:
           .\venv\Scripts\python.exe -m pip install -r requirements-api.txt
           .\venv\Scripts\python.exe -m pip install mlflow
 
+      - name: Verify MLflow installation
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" -c "import mlflow; print('MLflow version:', mlflow.__version__)"
+
+          if ($LASTEXITCODE -ne 0) {
+              Write-Host "ERROR: MLflow is not installed correctly."
+              exit $LASTEXITCODE
+          }
+
+          Write-Host "SUCCESS: MLflow is installed."
+
       - name: Run preprocessing
         shell: powershell
         run: |
