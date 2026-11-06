@@ -124,9 +124,9 @@ def prepare_deployment():
 
     print("\n[INFO] Deployment bundle:")
     print("deployment/")
-    print("├── model.pkl")
-    print("├── preprocessor.pkl")
-    print("└── model_metadata.json")
+    print("|-- model.pkl")
+    print("|-- preprocessor.pkl")
+    print("`-- model_metadata.json")
 
     print("\n[SUCCESS] Deployment preparation completed.")
 
