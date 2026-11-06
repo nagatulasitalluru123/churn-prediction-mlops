@@ -67,6 +67,27 @@ jobs:
           Write-Host "SUCCESS: evolved_data.csv exists."
           Get-Item ".\data\monitoring\drift\evolved_data.csv"
 
+      - name: Generate concept drift dataset
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_create_concept_drift_dataset.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              Write-Host "Concept drift dataset creation failed."
+              exit $LASTEXITCODE
+          }
+
+          if (-not (Test-Path ".\data\monitoring\drift\evolved_labeled_data.csv")) {
+              Write-Host "ERROR: evolved_labeled_data.csv was not created."
+              Write-Host "Contents of data\monitoring\drift:"
+              Get-ChildItem ".\data\monitoring\drift" -Force
+              exit 1
+          }
+
+          Write-Host "SUCCESS: evolved_labeled_data.csv exists."
+          Get-Item ".\data\monitoring\drift\evolved_labeled_data.csv"
+
       - name: Generate Lab 12 monitoring reports
         shell: powershell
         run: |
