@@ -24,7 +24,12 @@ jobs:
           .\venv\Scripts\python.exe -m pip install --upgrade pip
           .\venv\Scripts\python.exe -m pip install -r requirements.txt
           .\venv\Scripts\python.exe -m pip install -r requirements-api.txt
-
+      
+      - name: Run preprocessing
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\03_preprocessing.py"
       - name: Generate Lab 12 monitoring reports
         shell: powershell
         run: |
