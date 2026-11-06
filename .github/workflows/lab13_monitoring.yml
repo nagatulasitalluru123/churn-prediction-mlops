@@ -22,21 +22,21 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          if (Test-Path ".\lab13_venv") {
-              Write-Host "Removing old Lab 13 environment..."
-              Remove-Item ".\lab13_venv" -Recurse -Force
+          if (Test-Path ".\venv") {
+              Write-Host "Removing old virtual environment..."
+              Remove-Item ".\venv" -Recurse -Force
           }
 
-          python -m venv lab13_venv
+          python -m venv venv
 
-          & ".\lab13_venv\Scripts\python.exe" -m pip install --upgrade pip
-          & ".\lab13_venv\Scripts\python.exe" -m pip install -r requirements.txt
-          & ".\lab13_venv\Scripts\python.exe" -m pip install -r requirements-api.txt
-          & ".\lab13_venv\Scripts\python.exe" -m pip install mlflow
+          & ".\venv\Scripts\python.exe" -m pip install --upgrade pip
+          & ".\venv\Scripts\python.exe" -m pip install -r requirements.txt
+          & ".\venv\Scripts\python.exe" -m pip install -r requirements-api.txt
+          & ".\venv\Scripts\python.exe" -m pip install mlflow==2.17.2
 
           Write-Host "Checking MLflow installation..."
 
-          & ".\lab13_venv\Scripts\python.exe" -c "import mlflow; print('MLflow version:', mlflow.__version__)"
+          & ".\venv\Scripts\python.exe" -c "import mlflow; print('MLflow version:', mlflow.__version__)"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "ERROR: MLflow installation failed."
@@ -50,7 +50,7 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\03_preprocessing.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\03_preprocessing.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Preprocessing failed."
@@ -72,7 +72,7 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\05_train_registry.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\05_train_registry.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Model training/registration failed."
@@ -86,7 +86,7 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\08_automate_lifecycle.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\08_automate_lifecycle.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Model lifecycle failed."
@@ -100,7 +100,7 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\11_prepare_deployment.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\11_prepare_deployment.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Deployment preparation failed."
@@ -124,7 +124,7 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\12_create_evolved_dataset.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_create_evolved_dataset.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Evolved dataset creation failed."
@@ -146,7 +146,7 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\12_create_concept_drift_dataset.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_create_concept_drift_dataset.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Concept drift dataset creation failed."
@@ -168,21 +168,21 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\12_data_drift.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_data_drift.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Data drift analysis failed."
               exit $LASTEXITCODE
           }
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\12_concept_drift.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_concept_drift.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Concept drift analysis failed."
               exit $LASTEXITCODE
           }
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\12_prediction_drift.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_prediction_drift.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "Prediction drift analysis failed."
@@ -196,7 +196,7 @@ jobs:
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
 
-          & ".\lab13_venv\Scripts\python.exe" ".\src\mlops_pipeline\12_monitor_trigger.py"
+          & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_monitor_trigger.py"
 
           if ($LASTEXITCODE -ne 0) {
               Write-Host "MLOps monitoring trigger failed."
