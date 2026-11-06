@@ -24,19 +24,49 @@ jobs:
           .\venv\Scripts\python.exe -m pip install --upgrade pip
           .\venv\Scripts\python.exe -m pip install -r requirements.txt
           .\venv\Scripts\python.exe -m pip install -r requirements-api.txt
-      
+
       - name: Run preprocessing
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
           & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\03_preprocessing.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              Write-Host "Preprocessing failed."
+              exit $LASTEXITCODE
+          }
+
+          if (-not (Test-Path ".\data\processed\X_test_raw.csv")) {
+              Write-Host "ERROR: X_test_raw.csv was not created."
+              Write-Host "Contents of data\processed:"
+              Get-ChildItem ".\data\processed" -Force
+              exit 1
+          }
+
+          Write-Host "SUCCESS: X_test_raw.csv exists."
+          Get-Item ".\data\processed\X_test_raw.csv"
+
       - name: Generate Lab 12 monitoring reports
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
           & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_data_drift.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+          }
+
           & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_concept_drift.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+          }
+
           & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_prediction_drift.py"
+
+          if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+          }
 
       - name: Run MLOps monitoring trigger
         shell: powershell
@@ -44,14 +74,20 @@ jobs:
           Set-Location "$env:GITHUB_WORKSPACE"
           & ".\venv\Scripts\python.exe" ".\src\mlops_pipeline\12_monitor_trigger.py"
 
+          if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+          }
+
       - name: Show monitoring result
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
+
           if (Test-Path ".\outputs\monitoring\monitor_trigger_report.json") {
               Get-Content ".\outputs\monitoring\monitor_trigger_report.json"
           } else {
               Write-Host "Monitoring report was not generated."
+              exit 1
           }
 
       - name: Verify Kubernetes
